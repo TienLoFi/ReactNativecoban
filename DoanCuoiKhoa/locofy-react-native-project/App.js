@@ -11,6 +11,7 @@ import Profile from "./screens/Profile";
 import PayAndOrder from "./screens/PayAndOrder";
 import OrderCompleted from "./screens/OrderCompleted";
 import Details from "./screens/Details";
+//import Animation from "./screens/Animation";
 
 import Login from "./screens/Login";
 
@@ -108,7 +109,12 @@ export default function App() {
             component={Details}
             options={{ headerShown: false }}
           />
-        </Stack.Navigator>
+              {/* <Stack.Screen
+            name="Animation"
+            component={Animation}
+            options={{ headerShown: false }}
+          /> */}
+        </Stack.Navigator> 
       </NavigationContainer>
     </View>
   );
