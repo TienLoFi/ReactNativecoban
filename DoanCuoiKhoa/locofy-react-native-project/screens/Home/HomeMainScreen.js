@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   StyleSheet,
   Text,
@@ -10,69 +10,81 @@ import {
   FlatList,
   TextInput,
   ScrollView,
-  TouchableOpacity
+  TouchableOpacity,
+  ActivityIndicator,
+  Animated,
 } from "react-native";
-import { FontFamily, Color, FontSize, Border, Padding } from "../../GlobalStyles";
+import {
+  FontFamily,
+  Color,
+  FontSize,
+  Border,
+  Padding,
+} from "../../GlobalStyles";
 import ListCategory from "./ListCategory";
-import ListProduct from "./ListProduct";
-import { NavigationContainer } from '@react-navigation/native';
+import Icon from "@expo/vector-icons/Ionicons";
+import { GET_ALL, GET_IMG } from "../../api/apiService";
+import ProductItem from "./ProductItem";
+import Title from "../../components/Title";
 
+import { NavigationContainer } from "@react-navigation/native";
+const toggleTitleVisibility = () => {
+  setTitleVisible(!isTitleVisible);
+};
+const HomeMainScreen = ({ navigation }) => {
+  // const handleImagePress = (id) => {
+  //   navigation.navigate("Details");
+  // };
+  const [carData, setCarData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    // Use the GET ALL function to fetch data from your API
+    GET_ALL("products")
+      .then((response) => {
+        const responseData = response.data;
+        if (responseData && Array.isArray(responseData.content)) {
+          setCarData(responseData.content); // Update the state with the "content" array
+        } else {
+          console.error(
+            "Data received from the API is not in a supported format."
+          );
+        }
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching data: ", error);
+        setIsLoading(false);
+      });
+  }, []);
+  //animation
+  // const [data, setData] = useState([]);
+  // const [loading, setLoading] = useState(true);
 
-const SECTIONS = [
- 
-  {
-    title: 'Sản Phẩm',
-    horizontal: true,
-    data: [
-      {
-        key: '1',
-        text: 'Item text 1',
-        uri: 'https://picsum.photos/id/1011/200',
-      },
-      {
-        key: '2',
-        text: 'Item text 2',
-        uri: 'https://picsum.photos/id/1012/200',
-      },
+  // const pan = useRef(new Animated.ValueXY()).current;
+  // const list = useRef(new Animated.ValueXY()).current;
 
-      {
-        key: '3',
-        text: 'Item text 3',
-        uri: 'https://picsum.photos/id/1013/200',
-      },
-      {
-        key: '4',
-        text: 'Item text 4',
-        uri: 'https://picsum.photos/id/1015/200',
-      },
-      {
-        key: '5',
-        text: 'Item text 5',
-        uri: 'https://picsum.photos/id/1016/200',
-      },
-    ],
-  },
+  // useEffect(function () {
+  //   const getData = async () => {
+  //     const resp = await fetch(URL);
+  //     const data = await resp.json();
+  //     setData(data);
+  //     setLoading(false);
+  //   };
+  //   getData();
 
-];
-const HomeMainScreen = ({navigation}) => {
-  const ListItem = ({ item }) => {
-    return (
-      <View style={styles.item}>
-            <TouchableOpacity    onPress={() => navigation.navigate('Details')}>
-              
-        <Image
-          source={{
-            uri: item.uri,
-          }}
-          style={styles.itemPhoto}
-          resizeMode="cover"
-        />
-        </TouchableOpacity>
-        <Text style={styles.itemText}>{item.text}</Text>
-      </View>
-    );
-  };
-  
+  //   Animated.timing(pan, {
+  //     toValue: { x: -400, y: 0 },
+  //     delay: 1000,
+  //     useNativeDriver: false,
+  //   }).start();
+
+  //   Animated.timing(list, {
+  //     toValue: { x: 0, y: -300 },
+  //     delay: 2000,
+  //     useNativeDriver: false,
+  //   }).start();
+  // }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.TopNav}>
@@ -82,7 +94,7 @@ const HomeMainScreen = ({navigation}) => {
           source={require("../../assets/icons/MenuNav.png")}
         />
         <Text style={[styles.delivery, styles.homelayout, styles.popularTypo1]}>
-          Gym Clothes
+          T Super
         </Text>
       </View>
 
@@ -91,68 +103,122 @@ const HomeMainScreen = ({navigation}) => {
         contentFit="cover"
         source={require("../../assets/icons/ellipse-1.png")}
       />
-    <TouchableOpacity onPress={() => navigation.openDrawer()}>
-      <Image
-        style={styles.menu1Icon}
-        contentFit="cover"
-        source={require("../../assets/icons/menu-1.png")}
-      />
-</TouchableOpacity>
-      <SafeAreaView style={{ flex: 0.24, marginHorizontal: 20, top: 100 }}>
-        <TextInput
-          placeholder="Tìm Kiếm..."
-          clearButtonMode="always"
-          style={styles.searchBox}
-          autoCorrect={false}
-          
-          // underlineColorAndroid="#747070"
-          // value={searchQuery}
-          // onChangeText={query => handleSearch(query)}
-        />
-      </SafeAreaView>
 
-      <SafeAreaView style={{ flex: 1,zIndex:1, }}>
-        
-        <ScrollView>
-          <ListCategory />
+      <SafeAreaView style={{ flex: 0.25, marginHorizontal: 20, top: 100 }}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            width: "100%",
 
-          <SectionList style={{right:8,}}
-          contentContainerStyle={{ paddingHorizontal:10}}
-          stickySectionHeadersEnabled={false}
-          sections={SECTIONS}
-          scrollEnabled={false}
-
-          renderSectionHeader={({ section }) => (
-            <>
-              <Text style={styles.sectionHeader}>{section.title}</Text>
-              {section.horizontal ? (
-                <FlatList
-                columnWrapperStyle={styles.row}
-                numColumns={2}
-                  data={section.data}
-                  renderItem={({ item }) => 
-                  <ListItem item={item} />}
-                  showsHorizontalScrollIndicator={false}
-                />
-              ) : null}
-            </>
-          )}
-          renderItem={({ item, section }) => {
-            if (section.horizontal) {
-              return null;
-            }
-            return <ListItem item={item} />;
+            marginVertical: 30,
           }}
-          maxToRenderPerBatch={10} 
-          windowSize={10}
-        />
-        </ScrollView>
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              elevation: 2,
+              width: "85%",
+              backgroundColor: "#FFF",
+              paddingHorizontal: 20,
+              marginLeft: 2,
+              height: 45,
+              borderRadius: 10,
+
+              top: -30,
+            }}
+          >
+            <Icon
+              name="ios-search"
+              size={22}
+              color="#4f4a4a"
+              style={{ marginRight: 10 }}
+            />
+            <TextInput placeholder="Tìm Kiếm..." />
+          </View>
+
+          <View
+            style={{
+              alignItems: "center",
+              elevation: 2,
+              width: "15%",
+              backgroundColor: "#FFF",
+              marginLeft: 5,
+              height: 45,
+              borderRadius: 10,
+              marginLeft: 1,
+              justifyContent: "center",
+              top: -30,
+            }}
+          >
+            <TouchableOpacity onPress={() => navigation.openDrawer()}>
+              <Image
+                source={require("../../images/sort.png")}
+                style={{
+                  width: 18,
+                  height: 25,
+                }}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
       </SafeAreaView>
+
+      {isLoading ? (
+        <ActivityIndicator size="large" color="#ff591d" />
+      ) : (
+        <SafeAreaView style={{ flex: 1, zIndex: 1 }}>
+          <ScrollView>
+            <Title content="Thương Hiệu*"></Title>
+
+            <ListCategory />
+
+            <Title content="Sản Phẩm*"></Title>
+            <FlatList
+              scrollEnabled={false}
+              data={carData} // Pass the data array to the FlatList
+              keyExtractor={(item, index) => index.toString()} // Define a unique key
+              numColumns={2} // Display items in two columns
+              renderItem={({ item, index }) => (
+                <View style={styles.content}>
+                  {isLoading ? (
+                    <ActivityIndicator size="large" color="#ff591d" />
+                  ) : (
+                    <TouchableOpacity
+                      key={item.id}
+                      style={{ marginBottom: 20, borderRadius: 15 }}
+                      activeOpacity={0.0}
+                      underlayColor="#FFF"
+                      onPress={() => {
+                        const updatedCoffee = { ...item, total: item.price };
+                        navigation.navigate("Details", {
+                          item: updatedCoffee,
+                        });
+                      }}
+                    >
+                      <ProductItem
+                        key={index}
+                        imageSource={GET_IMG("products", item.photo)}
+                        textContent={item.title}
+                        textPrice={item.price}
+                      />
+                    </TouchableOpacity>
+                  )}
+                </View>
+              )}
+            />
+          </ScrollView>
+        </SafeAreaView>
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  flatListContent: {
+    paddingHorizontal: 16, // Adjust the padding as needed
+  },
   container: {
     backgroundColor: "transparent",
     flex: 1,
@@ -164,19 +230,19 @@ const styles = StyleSheet.create({
   ///
   homelayout: {
     top: 45,
-    left: 130,
+    marginHorizontal: 140,
     position: "absolute",
     zIndex: 1,
   },
   delivery: {
-    fontSize: 26,
+    fontSize: 21,
     color: "#ff591d",
   },
 
   popularTypo1: {
     fontFamily: FontFamily.montserratBold,
     fontWeight: "700",
-    textAlign: "center",
+    textAlign: "right",
 
     position: "absolute",
   },
@@ -212,9 +278,17 @@ const styles = StyleSheet.create({
   searchBox: {
     paddingHorizontal: 20,
     paddingVertical: 5,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 8,
+
+    flexDirection: "row",
+    alignIstems: "center",
+    elevation: 2,
+    width: "85%",
+    backgroundColor: "#FFF",
+    paddingHorizontal: 20,
+    height: 45,
+    borderRadius: 10,
+    marginLeft: 1,
+    top: -30,
   },
   sectionHeader: {
     color: Color.colorBlack,
@@ -222,10 +296,10 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginTop: 20,
     marginBottom: 5,
-    left:5,
+    left: 5,
   },
   item: {
-   marginHorizontal:10,
+    marginHorizontal: 10,
   },
   itemPhoto: {
     width: 200,
@@ -239,6 +313,6 @@ const styles = StyleSheet.create({
     left: 340,
     position: "absolute",
   },
- //
+  //
 });
 export default HomeMainScreen;

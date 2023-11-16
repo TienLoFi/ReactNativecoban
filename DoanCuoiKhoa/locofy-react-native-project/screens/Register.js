@@ -9,13 +9,17 @@ import {
   Animated,
   StatusBar,
   SafeAreaView,
+  TextInput,
+  TouchableHighlight
+
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Image } from "expo-image";
 import { FontSize, FontFamily, Color, Border } from "../GlobalStyles";
 import { Dimensions } from "react-native";
 import * as Animatable from "react-native-animatable";
-
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 const Register = ({ navigation }) => {
   const screenHeight = Dimensions.get("window").height;
   const screenWidth = Dimensions.get("window").width;
@@ -46,6 +50,71 @@ const Register = ({ navigation }) => {
     }, 500);
     return () => clearTimeout(startAnimationTimeout);
   }, []);
+
+
+  //api----
+  const [username, setName] = React.useState('');
+  const [useremail, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [confirmpassword, setConfirmPassword] = React.useState('');
+
+  const handleLogin = () => {
+    // Xử lý đăng ký tại đây
+    console.log('UserName:', username);
+    console.log('Useremail:', useremail);
+    console.log('Password:', password);
+    console.log('ConfirmPassword:', confirmpassword);
+    if (password !== confirmpassword) {
+      alert('Mật khẩu và mật khẩu xác nhận không khớp. Vui lòng nhập lại.');
+    }
+    else{
+    
+      const data ={
+        name:username,
+        email:useremail,
+        password:password
+      }
+          
+      
+      
+      
+      
+      fetch('http://10.17.8.232:8080/api/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+        
+      
+       
+      })
+        .then(response => {
+       
+          if (response.status >= 200 && response.status < 600) {
+            return response.json();
+          } else {
+            throw new Error('Lỗi không mong muốn từ máy chủ. Mã trạng thái: ' + response.status);
+          }
+        })
+        .then(data => {
+          alert('Đăng ký thành công');
+          navigation.navigate('Login');
+      
+        })
+        .catch(error => {
+          console.error('Lỗi cuộc gọi API:', error);
+          alert('Đăng ký thất bại. Vui lòng thử lại.');
+        });
+      
+          }
+          
+      
+      
+      
+      
+      
+        };
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <StatusBar
@@ -64,133 +133,201 @@ const Register = ({ navigation }) => {
         colors={["#fff", "#f2f0f0"]}
       >
         <View style={[styles.orConnectWithWrapper, styles.connectLayout]}>
-          <Text style={[styles.orConnectWith, styles.orConnectWithTypo]}>
-            or connect with
-          </Text>
-        </View>
-        <View style={[styles.registerInner, styles.frameChildLayout]}>
-          <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-            <LinearGradient
-              style={[styles.frameChild, styles.frameChildLayout]}
-              locations={[0, 1]}
-              colors={["#f5ca48", "#ffaf18"]}
-            />
-          </TouchableOpacity>
-        </View>
-        <Text style={[styles.register1, styles.registerTypo]}>Register</Text>
-        <View style={styles.registerChild}>
-          <View style={styles.frameWrapper}>
-            <View style={styles.frameItem} />
-          </View>
-        </View>
-        <Animatable.View
-        animation="fadeIn"
-        duration={1500}
-        delay={400 * 2 + 3 * 100}
-      >
-        <Text style={[styles.register2, styles.registerTypo]}>{`Register
-`}</Text>
-</Animatable.View>
-        <View
-          style={[
-            styles.alreadyRegisteredLoginHerWrapper,
-            styles.alreadyLayout,
-          ]}
-        >
-          <Text
-            style={[styles.alreadyRegisteredContainer, styles.alreadyLayout]}
+          <Animatable.View
+            animation="fadeIn"
+            duration={800}
+            delay={400 * 2 + 3 * 100}
           >
-            <Text
-              style={styles.loginWitTouchClr}
-            >{`Already registered ? `}</Text>
-          </Text>
+            <Text style={[styles.orConnectWith, styles.orConnectWithTypo]}>
+              or connect with
+            </Text>
+          </Animatable.View>
+        </View>
+        <TouchableHighlight onPress={handleLogin}>
+        <Animatable.View
+        animation="zoomIn"
+        duration={1000}
+        delay={400 * 2 + 3 * 200}
+        style={styles.rectangleParent1}
+      >
+          <LinearGradient
+            style={styles.groupChild}
+            locations={[0, 1]}
+            colors={["#e89f16", "#ffaf18"]}
+          />
 
-          <Text
+          <Text style={styles.getStarted}>Register</Text>
+        </Animatable.View>
+        </TouchableHighlight>
+        <Animatable.View
+          animation="zoomIn"
+          duration={1500}
+          delay={400 * 2 + 3 * 100}
+        >
+          <Text style={[styles.register2, styles.registerTypo]}>{`Register
+`}</Text>
+        </Animatable.View>
+        <Animatable.View
+          animation="fadeIn"
+          duration={800}
+          delay={400 * 2 + 3 * 100}
+        >
+          <View
             style={[
-              styles.alreadyRegisteredLoginHerWrapper1,
+              styles.alreadyRegisteredLoginHerWrapper,
               styles.alreadyLayout,
             ]}
           >
-            <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-              <Text style={styles.registerHere1}>Login here</Text>
-            </TouchableOpacity>
-          </Text>
-        </View>
-        <Image
-          style={styles.registerItem}
-          contentFit="cover"
-          source={require("../assets/images/rectangle-10.png")}
-        />
+            <Text
+              style={[styles.alreadyRegisteredContainer, styles.alreadyLayout]}
+            >
+              <Text
+                style={styles.loginWitTouchClr}
+              >{`Already registered ? `}</Text>
+            </Text>
 
-        <View style={[styles.rectangleParent, styles.rectangleLayout]}>
-          <View style={styles.frameInner} />
-          <Text style={[styles.emailAddress, styles.userNameTypo]}>
-            Email Address
-          </Text>
-          <Image
-            style={[styles.mailIcon, styles.iconLayout]}
-            contentFit="cover"
-            source={require("../assets/icons/mail.png")}
-          />
-        </View>
-        <View style={[styles.rectangleGroup, styles.rectangleLayout]}>
-          <View style={styles.frameChild1ShadowBox} />
-          <Text style={[styles.userName, styles.userNameTypo]}>User Name</Text>
-          <Image
-            style={styles.groupIcon}
-            contentFit="cover"
-            source={require("../assets/icons/group-18.png")}
-          />
-        </View>
-        <View style={[styles.rectangleContainer, styles.rectangleLayout]}>
-          <View style={styles.frameChild1ShadowBox} />
-          <Text style={[styles.userName, styles.userNameTypo]}>Password</Text>
-          <Image
-            style={[styles.lockIcon, styles.iconLayout]}
-            contentFit="cover"
-            source={require("../assets/icons/lock.png")}
-          />
-        </View>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "center",
-            marginHorizontal: 12,
-            alignItems: "center",
-            alignContent: "center",
-            alignContent: "center",
-            width: width, // Sử dụng chiều rộng của màn hình
-          }}
-        >
-          <TouchableOpacity style={styles.icon}>
-            <Image
-              source={require("../assets/icons/google.png")}
-              style={styles.image1}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.icon}>
-            <Image
-              source={require("../assets/icons/apple.png")}
-              style={styles.image1}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.icon}>
-            <Image
-              source={require("../assets/icons/facebook.png")}
-              style={styles.image1}
-            />
-          </TouchableOpacity>
-        </View>
+            <Text
+              style={[
+                styles.alreadyRegisteredLoginHerWrapper1,
+                styles.alreadyLayout,
+              ]}
+            >
+                <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+                <Text style={styles.registerHere1}>Login here</Text>
+                </TouchableOpacity>
+            </Text>
+          </View>
+        </Animatable.View>
+
         <Animatable.View
-        animation="fadeIn"
-        duration={800}
-        delay={400 * 2 + 3 * 100}
-      >
-        <Image
-          style={styles.sport11983142Icon}
-          contentFit="cover"
-          source={require("../assets/images/sport-1198314-1.png")}
-        />
+          animation="fadeIn"
+          duration={800}
+          delay={1.5 * (400 * 2 + 3 * 100)}
+        >
+          <View style={[styles.rectangleParent, styles.rectangleLayout]}>
+            <View style={styles.frameChild1ShadowBox} />
+            <TextInput
+    style={[styles.emailAddress, styles.userNameTypo]}
+        placeholder="Email Address"
+        value={useremail}
+        onChangeText={text => setEmail(text)}
+      />
+            <Image
+              style={[styles.mailIcon, styles.iconLayout]}
+              contentFit="cover"
+              source={require("../assets/icons/mail.png")}
+            />
+          </View>
+        </Animatable.View>
+
+        <Animatable.View
+          animation="fadeIn"
+          duration={800}
+          delay={400 * 2 + 3 * 100}
+        >
+          <View style={[styles.rectangleGroup, styles.rectangleLayout]}>
+            <View style={styles.frameChild1ShadowBox} />
+            <TextInput
+       style={[styles.userName, styles.userNameTypo]}
+        placeholder="User Name"
+        value={username}
+        onChangeText={text => setName(text)}
+      />
+            <Image
+              style={styles.groupIcon}
+              contentFit="cover"
+              source={require("../assets/icons/group-18.png")}
+            />
+          </View>
+        </Animatable.View>
+        <Animatable.View
+          animation="fadeIn"
+          duration={800}
+          delay={2 * (400 * 2 + 3 * 100)}
+        >
+          <View style={[styles.rectangleContainer, styles.rectangleLayout]}>
+            <View style={styles.frameChild1ShadowBox} />
+            <TextInput
+      style={[styles.userName, styles.userNameTypo]}
+        placeholder="Password"
+        secureTextEntry
+        value={password}
+        onChangeText={text => setPassword(text)}
+      />
+            <Image
+              style={[styles.lockIcon, styles.iconLayout]}
+              contentFit="cover"
+              source={require("../assets/icons/lock.png")}
+            />
+          </View>
+        </Animatable.View>
+        <Animatable.View
+          animation="fadeIn"
+          duration={800}
+          delay={3 * (400 * 2 + 3 * 100)}
+        >
+          <View style={[styles.rectangleContainer2, styles.rectangleLayout]}>
+            <View style={styles.frameChild1ShadowBox} />
+            <TextInput
+       style={[styles.userName, styles.userNameTypo]}
+        placeholder="Confirm Password"
+        value={confirmpassword}
+        secureTextEntry
+        onChangeText={text => setConfirmPassword(text)}
+      />
+            <Image
+              style={[styles.lockIcon, styles.iconLayout]}
+              contentFit="cover"
+              source={require("../assets/icons/lock.png")}
+            />
+          </View>
+        </Animatable.View>
+        <Animatable.View
+          animation="fadeIn"
+          duration={800}
+          delay={400 * 2 + 3 * 100}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              marginHorizontal: 12,
+              alignItems: "center",
+              alignContent: "center",
+              alignContent: "center",
+              width: width, // Sử dụng chiều rộng của màn hình
+            }}
+          >
+            <TouchableOpacity style={styles.icon}>
+              <Image
+                source={require("../assets/icons/google.png")}
+                style={styles.image1}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.icon}>
+              <Image
+                source={require("../assets/icons/apple.png")}
+                style={styles.image1}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.icon}>
+              <Image
+                source={require("../assets/icons/facebook.png")}
+                style={styles.image1}
+              />
+            </TouchableOpacity>
+          </View>
+        </Animatable.View>
+        <Animatable.View
+          animation="fadeIn"
+          duration={800}
+          delay={400 * 2 + 3 * 100}
+        >
+          <Image
+            style={styles.sport11983142Icon}
+            contentFit="cover"
+            source={require("../assets/images/logoxe2.png")}
+          />
         </Animatable.View>
       </Animated.View>
     </SafeAreaView>
@@ -198,13 +335,51 @@ const Register = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  rectangleParent1: {
+    top: 520,
+   
+left:wp('40%'),
+    position: "absolute",
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  groupChild: {
+
+    borderRadius: 27,
+    shadowColor: "rgba(110, 75, 10, 0.11)",
+    shadowRadius: 18,
+    elevation: 18,
+    height:hp('5%'),
+    marginleft: wp('10'),
+    width:  wp('80%'),
+    position: "absolute",
+    backgroundColor: "transparent",
+    shadowOpacity: 1,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+  
+  },
+  getStarted: {
+   
+    fontSize: hp('2%'),
+    color: "#fff",
+
+    textAlign: "center",
+    fontFamily: FontFamily.trebuchetMS,
+    fontWeight: "700",
+    left: 0,
+
+   
+  },
   image1: {
     width: 40,
     height: 40,
     top: 630,
   },
   icon: {
-    backgroundColor: "#f0f0f0",
+
     borderRadius: 20,
     marginHorizontal: 12,
   },
@@ -216,23 +391,20 @@ const styles = StyleSheet.create({
       height: 4,
     },
   },
-  connectLayout: {
-    width: 104,
-    position: "absolute",
-  },
+  
   orConnectWithTypo: {
     textAlign: "center",
     fontSize: FontSize.size_sm,
 
-    flexDirection: "row",
-    justifyContent: "center",
+ 
   },
   frameChildLayout: {
     height: 45,
     position: "absolute",
+    
   },
   registerTypo: {
-    textAlign: "center",
+
     fontFamily: FontFamily.trebuchetMS,
     fontWeight: "700",
     position: "absolute",
@@ -248,9 +420,10 @@ const styles = StyleSheet.create({
   },
   rectangleLayout: {
     height: 47,
-    width: 312,
-    left: 55,
+    width: wp("55%"),
+   marginHorizontal:"10%",
     position: "absolute",
+    
   },
   userNameTypo: {
     color: Color.colorSilver,
@@ -259,6 +432,7 @@ const styles = StyleSheet.create({
     fontFamily: FontFamily.trebuchetMS,
     textAlign: "left",
     position: "absolute",
+
   },
   iconLayout: {
     height: 24,
@@ -269,13 +443,14 @@ const styles = StyleSheet.create({
   orConnectWith: {
     fontFamily: FontFamily.codaRegular,
     color: "#747070",
-    left: 10,
-    top: 0,
+left:10,
+    top: 15,
     width: 104,
   },
   orConnectWithWrapper: {
     top: 590,
-    left: 156,
+    alignItems: 'center',
+    justifyContent: 'center',
     height: 20,
   },
   frameChild: {
@@ -283,8 +458,8 @@ const styles = StyleSheet.create({
     shadowColor: "rgba(110, 75, 10, 0.11)",
     shadowRadius: 18,
     elevation: 18,
-    width: 311,
-    left: 0,
+    width: wp("80%"),
+    left:45,
     top: 0,
     backgroundColor: "transparent",
     shadowOpacity: 1,
@@ -295,17 +470,18 @@ const styles = StyleSheet.create({
     height: 45,
   },
   registerInner: {
-    top: 484,
-    width: 151,
-    left: 55,
+    top: 505,
+   
+
   },
   register1: {
-    top: 498,
+    top: 515,
     fontSize: 16,
     color: Color.colorWhite,
     height: 36,
-    width: 311,
-    left: 55,
+    textAlign: "center",
+    marginHorizontal: "45%",
+   
   },
   frameItem: {
     width: 64,
@@ -313,7 +489,7 @@ const styles = StyleSheet.create({
   },
   frameWrapper: {
     top: -11,
-    left: 33,
+ 
     width: 75,
     height: 42,
     flexDirection: "row",
@@ -326,18 +502,20 @@ const styles = StyleSheet.create({
     width: 136,
     height: 34,
     position: "absolute",
+    
   },
   registerHere1: {
     fontSize: FontSize.size_sm,
     color: "#ffa717",
   },
   register2: {
+    textAlign: "center",
     top: 137,
     left: 15,
     fontSize: 55,
     color: "#ff591d",
-    width: 241,
-    height: 101,
+    width: hp('30%'),
+    height:wp('50%'),
     textShadowColor: "rgba(0, 0, 0, 0.25)",
     textShadowOffset: {
       width: 0,
@@ -357,7 +535,7 @@ const styles = StyleSheet.create({
     top: 0,
   },
   alreadyRegisteredLoginHerWrapper: {
-    top: 547,
+    top: 560,
     left: 100,
   },
   alreadyRegisteredLoginHerWrapper1: {
@@ -365,7 +543,6 @@ const styles = StyleSheet.create({
     fontSize: FontSize.size_sm,
     left: 140,
     color: "#ffa717",
-
   },
   registerItem: {
     top: 1,
@@ -392,34 +569,30 @@ const styles = StyleSheet.create({
   },
   frameInner: {
     borderRadius: 49,
-    shadowColor: "rgba(0, 0, 0, 0.21)",
-    elevation: 21,
-    shadowRadius: 21,
+
+ 
     backgroundColor: Color.colorWhite,
     height: 47,
     width: 312,
     left: 0,
     top: 0,
     position: "absolute",
-    shadowOpacity: 1,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
+
   },
   emailAddress: {
     left: 37,
+    zIndex: 100,
   },
   mailIcon: {
     top: 13,
     left: 276,
   },
   rectangleParent: {
-    top: 333,
+    top: 315,
   },
   frameChild1ShadowBox: {
     borderRadius: 49,
-    shadowColor: "rgba(0, 0, 0, 0.21)",
+   
     elevation: 21,
     shadowRadius: 21,
     backgroundColor: Color.colorWhite,
@@ -428,11 +601,7 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
     position: "absolute",
-    shadowOpacity: 1,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
+
   },
   userName: {
     left: 38,
@@ -445,14 +614,17 @@ const styles = StyleSheet.create({
     position: "absolute",
   },
   rectangleGroup: {
-    top: 257,
+    top: 250,
   },
   lockIcon: {
     top: 11,
     left: 275,
   },
   rectangleContainer: {
-    top: 412,
+    top: 377,
+  },
+  rectangleContainer2: {
+    top: 445,
   },
   authIcon: {
     top: 620,
@@ -462,10 +634,10 @@ const styles = StyleSheet.create({
     position: "absolute",
   },
   sport11983142Icon: {
-    top: 89,
-    left: 270,
-    width: 123,
-    height: 123,
+top:70,
+    left: 220,
+    width: hp('20%'),
+    height:wp(' 30%'),
     position: "absolute",
   },
   register: {

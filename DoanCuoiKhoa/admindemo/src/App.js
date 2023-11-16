@@ -9,7 +9,7 @@ import {
 
 import { listProduct, editProduct, CreateProduct } from "./component/Products";
 import { listBrand, editBrand, CreateBrand } from "./component/Brands";
-
+import { ListUser,editUser,createUser } from "./component/User";
 import dataProvider from "./component/customDataProvider";
 
 const App = () => (
@@ -31,6 +31,12 @@ const App = () => (
       list={listBrand}
       edit={editBrand}
       create={CreateBrand}
+    />
+     <Resource
+      name="users"
+      list={ListUser}
+      edit={editUser}
+      create={createUser}
     />
   </Admin>
 );

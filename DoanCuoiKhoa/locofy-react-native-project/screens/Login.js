@@ -11,13 +11,17 @@ import {
   TouchableOpacity,
   StatusBar,
   SafeAreaView,
+  Keyboard,
+  TouchableHighlight
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Image } from "expo-image";
 import { FontFamily, FontSize, Color, Border } from "../GlobalStyles";
 import { Dimensions } from "react-native";
 import * as Animatable from "react-native-animatable";
-
+import { s, vs, ms, mvs } from 'react-native-size-matters';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 const Login = ({ navigation }) => {
   const { width, height } = Dimensions.get("window"); // Lấy chiều rộng màn hình
 
@@ -43,6 +47,40 @@ const Login = ({ navigation }) => {
     }, 500);
     return () => clearTimeout(startAnimationTimeout);
   }, []);
+
+
+  //api 
+  const [useremail, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+
+  const handleSignIn = () => {
+    // Lấy giá trị từ TextInput và kiểm tra với dữ liệu từ API
+    Keyboard.dismiss();
+    if (!useremail || !password) {
+      alert("Vui lòng nhập email và mật khẩu.");
+      return;
+    }
+  
+    fetch('http://10.17.8.232:8080/api/users')
+      .then(response => response.json())
+      .then(data => {
+        const user = data.content.find(item => item.email === useremail);
+  
+        if (user) {
+          if (user.password === password) {
+            alert("Xin chào");
+            navigation.navigate('Overview');
+          } else {
+            alert('Mật khẩu không đúng.');
+          }
+        } else {
+          alert("Email không đúng");
+        }
+      })
+      .catch(error => {
+        console.error('Lỗi cuộc gọi API:', error);
+      });
+  };
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <StatusBar
@@ -61,12 +99,13 @@ const Login = ({ navigation }) => {
 `}</Animatable.Text>
 
         <Animatable.View
-          animation="zoomIn"
+          animation="fadeIn"
           duration={1000}
           delay={400 * 2 + 3 * 200}
           style={styles.rectangleParent}
         >
-          <TouchableOpacity onPress={() => navigation.navigate("Overview")}>
+              <TouchableHighlight   onPress={handleSignIn}>
+      
             <LinearGradient
               style={[styles.frameChild, styles.login1Layout]}
               colors={["#E89F16", "#ffaf18"]}
@@ -75,31 +114,38 @@ const Login = ({ navigation }) => {
             >
               <Text style={[styles.login1, styles.loginTypo1]}>Login</Text>
             </LinearGradient>
+          </TouchableHighlight>
+        </Animatable.View>
+      
+        <Animatable.View
+          animation="fadeIn"
+          duration={1000}
+          delay={400 * 2 + 3 * 200}
+        >
+          <TouchableOpacity>
+            <Text style={[styles.forgetPassword, styles.passwordTypo1]}>
+              Forget password
+            </Text>
           </TouchableOpacity>
         </Animatable.View>
-        <View style={styles.loginInner}>
-          <View style={styles.frameWrapper}>
-            <View style={styles.frameItem} />
+        <Animatable.View
+          animation="fadeIn"
+          duration={1000}
+          delay={400 * 2 + 3 * 200}
+        >
+          <View style={styles.rememberPasswordParent}>
+            <Text style={[styles.rememberPassword, styles.passwordTypo1]}>
+              Remember password
+            </Text>
+            <TouchableOpacity>
+              <Image
+                style={styles.groupChild}
+                contentFit="cover"
+                source={require("../assets/icons/rectangle-7.png")}
+              />
+            </TouchableOpacity>
           </View>
-        </View>
-
-        <TouchableOpacity>
-          <Text style={[styles.forgetPassword, styles.passwordTypo1]}>
-            Forget password
-          </Text>
-        </TouchableOpacity>
-        <View style={styles.rememberPasswordParent}>
-          <Text style={[styles.rememberPassword, styles.passwordTypo1]}>
-            Remember password
-          </Text>
-          <TouchableOpacity>
-            <Image
-              style={styles.groupChild}
-              contentFit="cover"
-              source={require("../assets/icons/rectangle-7.png")}
-            />
-          </TouchableOpacity>
-        </View>
+        </Animatable.View>
         <Image
           style={styles.loginChild}
           contentFit="cover"
@@ -112,10 +158,13 @@ const Login = ({ navigation }) => {
           delay={400 * 2 + 3 * 200}
           style={[styles.rectangleGroup, styles.rectangleLayout]}
         >
-          <View style={[styles.frameInner, styles.frameInnerShadowBox]} />
-          <Text style={[styles.emailAddress, styles.passwordTypo]}>
-            Email Address
-          </Text>
+    
+          <TextInput
+    style={[styles.frameInner, styles.frameInnerShadowBox,styles.emailAddress, styles.passwordTypo]}
+        placeholder="Email"
+        value={useremail}
+        onChangeText={text => setEmail(text)}
+      />
           <Image
             style={[styles.mailIcon, styles.iconLayout]}
             contentFit="cover"
@@ -126,11 +175,17 @@ const Login = ({ navigation }) => {
         <Animatable.View
           animation="fadeIn"
           duration={1500}
-          delay={400 * 2 + 3 * 200}
+          delay={2 *(400 * 2 + 3 * 100)}  
           style={[styles.rectangleContainer, styles.rectangleLayout]}
         >
-          <View style={[styles.rectangleView, styles.frameInnerShadowBox]} />
-          <Text style={[styles.password, styles.passwordTypo]}>Password</Text>
+       
+          <TextInput
+       style={[styles.rectangleView, styles.frameInnerShadowBox,styles.password, styles.passwordTypo]}
+        placeholder="Password"
+        secureTextEntry
+        value={password}
+        onChangeText={text => setPassword(text)}
+      />
           <Image
             style={[styles.lockIcon, styles.iconLayout]}
             contentFit="cover"
@@ -148,65 +203,67 @@ const Login = ({ navigation }) => {
             width: width, // Sử dụng chiều rộng của màn hình
           }}
         >
-             <Animatable.View style={styles.icon}>
-          <TouchableOpacity >
+          <Animatable.View style={styles.icon}>
+            <TouchableOpacity>
+              <Animatable.View
+                animation="fadeIn"
+                delay={400 * 2 + 1 * 200}
+                duration={1000}
+                style={styles.google1Wrapper}
+              >
+                <Image
+                  source={require("../assets/icons/google.png")}
+                  style={styles.image1}
+                />
+              </Animatable.View>
+            </TouchableOpacity>
+          </Animatable.View>
+          <TouchableOpacity>
             <Animatable.View
               animation="fadeIn"
-              delay={400 * 2 + 1 * 200}
-              duration={1000}
-              style={styles.google1Wrapper}
+              duration={3000}
+              delay={400 * 2 + 3 * 200}
+              style={styles.icon}
             >
               <Image
-                source={require("../assets/icons/google.png")}
+                source={require("../assets/icons/apple.png")}
                 style={styles.image1}
               />
-              </Animatable.View>
-        
-          </TouchableOpacity>
-          </Animatable.View>
-          <TouchableOpacity >
-          <Animatable.View
-              animation="fadeIn"
-              duration={3000}
-              delay={400 * 2 + 3 * 200}
-              style={styles.icon}
-            >
-            <Image
-              source={require("../assets/icons/apple.png")}
-              style={styles.image1}
-            />
             </Animatable.View>
           </TouchableOpacity>
-          <TouchableOpacity >
-          <Animatable.View
+          <TouchableOpacity>
+            <Animatable.View
               animation="fadeIn"
               duration={3000}
               delay={400 * 2 + 3 * 200}
               style={styles.icon}
             >
-            <Image
-              source={require("../assets/icons/facebook.png")}
-              style={styles.image1}
-            />
-        
-          </Animatable.View>
+              <Image
+                source={require("../assets/icons/facebook.png")}
+                style={styles.image1}
+              />
+            </Animatable.View>
           </TouchableOpacity>
         </Animatable.View>
         <View style={[styles.orConnectWithWrapper, styles.connectLayout]}>
           <Text style={[styles.orConnectWith, styles.connectLayout]}>OR</Text>
         </View>
         <Animatable.View
-          animation="zoomIn"
+          animation="fadeIn"
           duration={1500}
           delay={400 * 2 + 3 * 200}
         >
           <Image
             style={styles.sport11983141Icon}
             contentFit="cover"
-            source={require("../assets/images/sport-1198314-1.png")}
+            source={require("../assets/images/logoxe2.png")}
           />
         </Animatable.View>
-
+        <Animatable.View
+          animation="fadeIn"
+          duration={1500}
+          delay={400 * 2 + 3 * 200}
+        >
         <View
           style={[styles.noAccountRegisterHereWrapper, styles.accountLayout]}
         >
@@ -215,24 +272,26 @@ const Login = ({ navigation }) => {
               <Text style={styles.noAccount1}>Don't Have An Account ? </Text>
             </Text>
           </Text>
-        </View>
+    
         <Text style={[styles.RegisterHere, styles.passwordTypo1]}>
           <TouchableOpacity onPress={() => navigation.navigate("Register")}>
             <Text style={styles.registerHere1}>Register here</Text>
           </TouchableOpacity>
         </Text>
+        </View>
+        </Animatable.View>
       </Animated.View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  google1Wrapper:{
+  google1Wrapper: {
     alignItems: "center",
     flexDirection: "row",
   },
   icon: {
-    backgroundColor: "#f0f0f0",
+
     borderRadius: 20,
     marginHorizontal: 12,
   },
@@ -242,7 +301,7 @@ const styles = StyleSheet.create({
     top: 630,
   },
   login1Layout: {
-    width: 310,
+    width:  wp("80%"),
     left: 0,
   },
   loginTypo: {
@@ -263,31 +322,34 @@ const styles = StyleSheet.create({
   },
   rectangleLayout: {
     height: 47,
-    width: 312,
-    left: 53,
+    width: wp("80%"),
+marginHorizontal:"50%",
     position: "absolute",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   frameInnerShadowBox: {
     elevation: 21,
     shadowRadius: 21,
     backgroundColor: Color.colorWhite,
     height: 47,
-    width: 312,
-    left: 0,
-    top: 0,
+    width: wp("80%"),
+
+ 
     position: "absolute",
     shadowOpacity: 1,
     shadowOffset: {
       width: 0,
       height: 4,
     },
+  
   },
   passwordTypo: {
     color: Color.colorSilver,
     fontSize: FontSize.size_mini,
     top: 14,
     fontFamily: FontFamily.trebuchetMS,
-    textAlign: "left",
+   
     position: "absolute",
   },
   iconLayout: {
@@ -318,7 +380,7 @@ const styles = StyleSheet.create({
     shadowRadius: 18,
     elevation: 18,
     top: -20,
-    width: 310,
+ 
     height: 50,
     position: "absolute",
     backgroundColor: "transparent",
@@ -333,14 +395,14 @@ const styles = StyleSheet.create({
     color: Color.colorWhite,
     top: 13,
     width: 310,
-    left: 0,
+    left: 10,
   },
   rectangleParent: {
     top: 477,
-    left: 61,
-    width: 151,
-    height: 45,
+
+ 
     position: "absolute",
+    marginHorizontal:"10%",
   },
   frameItem: {
     width: 64,
@@ -365,10 +427,10 @@ const styles = StyleSheet.create({
   login2: {
     top: 169,
     left: 39,
-    fontSize: 55,
+    fontSize: 60,
     color: "#ff591d",
-    width: 175,
-    height: 69,
+    width: wp('40%'),
+        height:hp('60%'),
     textShadowColor: "rgba(0, 0, 0, 0.25)",
     textShadowOffset: {
       width: 0,
@@ -378,18 +440,17 @@ const styles = StyleSheet.create({
   },
   forgetPassword: {
     top: 410,
-    left: 263,
+    left: "70%",
     color: "#ffa717",
-    width: 109,
+
     fontFamily: FontFamily.trebuchetMS,
     fontWeight: "700",
     position: "absolute",
   },
   RegisterHere: {
-    top: 533,
-    left: 250,
+left:155,
     color: "#4d7ef9",
-    width: 109,
+
     fontFamily: FontFamily.trebuchetMS,
     fontWeight: "700",
     position: "absolute",
@@ -413,9 +474,9 @@ const styles = StyleSheet.create({
   },
   rememberPasswordParent: {
     top: 408,
-    width: 191,
-    height: 21,
-    left: 53,
+
+   
+    left: "10%",
     position: "absolute",
   },
   loginChild: {
@@ -447,11 +508,12 @@ const styles = StyleSheet.create({
     shadowColor: "rgba(0, 0, 0, 0.21)",
   },
   emailAddress: {
-    left: 37,
+    textAlign:"center",
+
   },
   mailIcon: {
-    left: 276,
-    top: 13,
+    left:110,
+    top: 25,
   },
   rectangleGroup: {
     top: 270,
@@ -461,11 +523,11 @@ const styles = StyleSheet.create({
     shadowColor: "rgba(0, 0, 0, 0.3)",
   },
   password: {
-    left: 38,
+    textAlign:"center",
   },
   lockIcon: {
-    top: 11,
-    left: 275,
+    left:110,
+    top: 25,
   },
   rectangleContainer: {
     top: 339,
@@ -483,13 +545,15 @@ const styles = StyleSheet.create({
   orConnectWithWrapper: {
     top: 600,
     height: 20,
-    left: 209,
+    
+    marginHorizontal:"50%",
+
   },
   sport11983141Icon: {
-    top: 100,
+    top: 85,
     left: 234,
-    width: 123,
-    height: 123,
+    width: 125,
+    height: 110,
     position: "absolute",
   },
   noAccount1: {
@@ -514,7 +578,8 @@ const styles = StyleSheet.create({
   },
   noAccountRegisterHereWrapper: {
     top: 534,
-    left: 90,
+    marginHorizontal:"20%",
+  flexDirection:"column",
   },
   login: {
     elevation: 23,

@@ -15,8 +15,15 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Image } from "expo-image";
 import { FontFamily } from "../GlobalStyles";
 import * as Animatable from "react-native-animatable";
-
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+  listenOrientationChange as lor,
+  removeOrientationListener as rol
+} from 'react-native-responsive-screen';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 const HomePage = ({ navigation }) => {
+  
   const [fadeAnim] = useState(new Animated.Value(0));
   const fadeInBotton = {
     0: {
@@ -80,17 +87,9 @@ const HomePage = ({ navigation }) => {
         delay={400 * 2 + 3 * 200}
        
       >
-          <Text style={[styles.thGii, styles.thGiiTypo]}> GYM CLOTHES</Text>
-        </Animatable.View>
-        <Animatable.View
-        animation="zoomIn"
-        duration={900}
-        delay={400 * 2 + 3 * 200}
-       
-      >
+        
         <Text style={[styles.choMngBn, styles.thGiiTypo]}>
-          CHÀO MỪNG BẠN ĐÃ ĐẾN
-        </Text>
+Chào Mừng Bạn Đã Đến </Text>
         </Animatable.View>
 
         <Animatable.View
@@ -102,7 +101,7 @@ const HomePage = ({ navigation }) => {
         <Image
           style={styles.sport11983142Icon}
           contentFit="cover"
-          source={require("../assets/images/sport-1198314-1.png")}
+          source={require("../assets/images/logoxe.png")}
         />
         </Animatable.View>
       </LinearGradient>
@@ -115,6 +114,7 @@ const styles = StyleSheet.create({
     textShadowOffset: {
       width: 0,
       height: 4,
+      textAlign:"center",
     },
 flexDirection:"row",
 justifyContent:"center",
@@ -134,22 +134,16 @@ justifyContent:"center",
     fontWeight: "700",
     position: "absolute",
   },
-  homepageChild: {
-    top: 484,
-    left: 55,
-    width: 151,
-    height: 45,
-    position: "absolute",
-  },
+ 
   groupChild: {
-    top: 0,
+
     borderRadius: 27,
     shadowColor: "rgba(110, 75, 10, 0.11)",
     shadowRadius: 18,
     elevation: 18,
-    height: 38,
-    left: 0,
-    width: 209,
+    height:hp('5%'),
+    marginleft: wp('10'),
+    width:  wp('60%'),
     position: "absolute",
     backgroundColor: "transparent",
     shadowOpacity: 1,
@@ -157,25 +151,27 @@ justifyContent:"center",
       width: 0,
       height: 4,
     },
+  
   },
   getStarted: {
-    top: 8,
-    fontSize: 18,
+   
+    fontSize: hp('2%'),
     color: "#fff",
-    height: 50,
+
     textAlign: "center",
     fontFamily: FontFamily.trebuchetMS,
     fontWeight: "700",
     left: 0,
-    width: 209,
-    position: "absolute",
+
+   
   },
   rectangleParent: {
     top: 611,
-    left: 100,
-    height: 55,
-    width: 250,
+   
+left:wp('43%'),
     position: "absolute",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   frameChild: {
     width: 64,
@@ -216,19 +212,21 @@ justifyContent:"center",
     position: "relative",
   },
   choMngBn: {
-    top: 413,
-    left: 75,
-    fontSize: 18,
+    top: 270,
+    fontSize: hp('3%'),
     color: "#ffa717",
-    textAlign: "center",
-    width: 255,
+    alignSelf: 'center', // Center the element horizontally
+   
   },
   sport11983142Icon: {
-    top: 183,
-    left: 90,
-    width: 225,
-    height: 225,
+    top: 320,
+   
+    width: hp('30%'),
+    height:wp(' 60%'),
+
     position: "absolute",
+    alignSelf: 'center',
+    marginTop: -moderateScale(wp('10%') / 2), // Half of the height
   },
   homepage: {
     elevation: 23,

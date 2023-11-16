@@ -39,6 +39,14 @@ export default function App() {
     "Montserrat-Medium": require("./assets/fonts/Montserrat/Montserrat-Medium.ttf"),
     "Montserrat-SemiBold": require("./assets/fonts/Montserrat/Montserrat-SemiBold.ttf"),
     "Montserrat-Bold": require("./assets/fonts/Montserrat/Montserrat-Bold.ttf"),
+
+    "Poppins-Bold": require("./assets/fonts/Poppins/Poppins-Bold.ttf"),
+    "Poppins-Italic": require("./assets/fonts/Poppins/Poppins-Italic.ttf"),
+    "Poppins-Medium": require("./assets/fonts/Poppins/Poppins-Medium.ttf"),
+
+    "DMSans_18pt-Bold": require("./assets/fonts/DM_Sans/DMSans_18pt-Bold.ttf"),
+    
+
   });
 
   if (!fontsLoaded && !error) {

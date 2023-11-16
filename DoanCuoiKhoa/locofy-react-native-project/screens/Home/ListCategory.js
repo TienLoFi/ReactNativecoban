@@ -1,207 +1,114 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  SectionList,
-  SafeAreaView,
-  Image,
-  FlatList,
-  TextInput,
-
-} from 'react-native';
-import { FontFamily, Color, FontSize, Border, Padding } from "../../GlobalStyles";
-
-
-const ListItem = ({ item }) => {
-  return (
-    <View style={styles.item}>
-      <Image
-        source={{
-          uri: item.uri,
-        }}
-        style={styles.itemPhoto}
-        resizeMode="cover"
-      />
-      <Text style={styles.itemText}>{item.text}</Text>
-    </View>
-  );
-};
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, SafeAreaView, Image, FlatList ,TouchableOpacity,ActivityIndicator} from 'react-native';
+import { Color, FontSize,FontFamily } from "../../GlobalStyles";
+import {GET_ALL,GET_IMG} from "../../api/apiService"
 
 export default () => {
-  return (
-    <View style={styles.container}>
-  
-  
-      <SafeAreaView >
-      <SectionList
-          contentContainerStyle={{ paddingHorizontal: 10 }}
-          stickySectionHeadersEnabled={false}
-          sections={SECTIONS}
-          scrollEnabled={false}
-          renderSectionHeader={({ section }) => (
-            <>
-              <Text style={styles.sectionHeader}>{section.title}</Text>
-              {section.horizontal ? (
-                <FlatList
-             
-                  horizontal
-                  data={section.data}
-             
-                  renderItem={({ item }) => <ListItem item={item} />}
-                  showsHorizontalScrollIndicator={false}
-                />
-              ) : null}
-            </>
-          )}
-          renderItem={({ item, section }) => {
-            if (section.horizontal) {
-              return null;
-            }
-            return <ListItem item={item} />;
-          }}
-        />
+  const [categoriData, setCarData] = useState([]);
+const [isLoading, setIsLoading] = useState(true);
+useEffect (() => {
+// Use the GET ALL function to fetch data from your API
+GET_ALL("brands")
+.then((response) => {
+const responseData = response.data;
+if (responseData && Array.isArray(responseData.content)) {
+  setCarData(responseData.content); // Update the state with the "content" array
+} else {
+console.error( "Data received from the API is not in a supported format." );
+}
+setIsLoading (false);
+})
+.catch((error) => {
+console.error("Error fetching data: ", error);
+setIsLoading (false);
+});
+}, []);
+
+
+const renderItem = ({ item }) => (
+  <TouchableOpacity
+    onPress={() => alert(`press ${item.title}`)}
+    style={{
+      justifyContent: 'center',
+      alignItems: 'center',
+   
+    }}>
+    <Image
+      style={{
+        width: 100,
+        height:60,
+        resizeMode: 'stretch',
+      margin:5,
         
-          </SafeAreaView>
+      }}
+      source={{
+        uri: GET_IMG("brands", item.photo)
+      }}
+    />
+    <Text style={{
+      margin:10,
+      fontFamily: FontFamily.PoppinsBold,
+      color: Color.colorBlack,
+      fontSize: FontSize.size_base,
+    }}>{item.title}</Text>
+  </TouchableOpacity>
+);
 
-    </View>
-  );
+return (
+  <View style={styles.container}>
+    <SafeAreaView>
+      {isLoading ? (
+   <ActivityIndicator size="large" color="#ff591d" />
+      ) : (
+        <FlatList
+      
+          horizontal
+          data={categoriData}
+          keyExtractor={item => item.title}
+          renderItem={renderItem}
+        />
+      )}
+    </SafeAreaView>
+  </View>
+);
 };
-
-const SECTIONS = [
-
-
-  {
-    title: 'Khuyến Mãi',
-    horizontal: true,
-    data: [
-      {
-        key: '1',
-        text: 'Item text 1',
-        uri: 'https://picsum.photos/id/1/200',
-      },
-      {
-        key: '2',
-        text: 'Item text 2',
-        uri: 'https://picsum.photos/id/10/200',
-      },
-
-      {
-        key: '3',
-        text: 'Item text 3',
-        uri: 'https://picsum.photos/id/1002/200',
-      },
-      {
-        key: '4',
-        text: 'Item text 4',
-        uri: 'https://picsum.photos/id/1006/200',
-      },
-      {
-        key: '5',
-        text: 'Item text 5',
-        uri: 'https://picsum.photos/id/1008/200',
-      },
-    ],
-  },
-//   {
-//     title: 'Punk and hardcore',
-
-//     data: [
-//       {
-//         key: '1',
-//         text: 'Item text 1',
-//         uri: 'https://picsum.photos/id/1011/200',
-//       },
-//       {
-//         key: '2',
-//         text: 'Item text 2',
-//         uri: 'https://picsum.photos/id/1012/200',
-//       },
-
-//       {
-//         key: '3',
-//         text: 'Item text 3',
-//         uri: 'https://picsum.photos/id/1013/200',
-//       },
-//       {
-//         key: '4',
-//         text: 'Item text 4',
-//         uri: 'https://picsum.photos/id/1015/200',
-//       },
-//       {
-//         key: '5',
-//         text: 'Item text 5',
-//         uri: 'https://picsum.photos/id/1016/200',
-//       },
-//     ],
-//   },
-//   {
-//     title: 'Based on your recent listening',
-//     data: [
-//       {
-//         key: '1',
-//         text: 'Item text 1',
-//         uri: 'https://picsum.photos/id/1020/200',
-//       },
-//       {
-//         key: '2',
-//         text: 'Item text 2',
-//         uri: 'https://picsum.photos/id/1024/200',
-//       },
-
-//       {
-//         key: '3',
-//         text: 'Item text 3',
-//         uri: 'https://picsum.photos/id/1027/200',
-//       },
-//       {
-//         key: '4',
-//         text: 'Item text 4',
-//         uri: 'https://picsum.photos/id/1035/200',
-//       },
-//       {
-//         key: '5',
-//         text: 'Item text 5',
-//         uri: 'https://picsum.photos/id/1038/200',
-//       },
-//     ],
-//   },
-];
+  
 
 const styles = StyleSheet.create({
   container: {
-   
-      backgroundColor: "transparent",
-      flex: 1,
-      width: "100%",
-      overflow: "hidden",
-   
-    },
   
+    flex: 1,
+    width: "100%",
+    overflow: "hidden",
+    backgroundColor: "#fff",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.5, // Adjust the opacity as needed
+    shadowRadius: 20, // Adjust the radius as needed
+    elevation: 2, // Android shadow
+  },
   sectionHeader: {
     color: Color.colorBlack,
     fontSize: FontSize.size_base,
     fontWeight: "700",
     marginTop: 20,
-    marginBottom: 5,
-    zIndex:0,
+    marginBottom: 10,
+    zIndex: 0,
+    left:5,
   },
   item: {
     margin: 10,
   },
   itemPhoto: {
-    width: 200,
-    height: 200,
+
+   
   },
   itemText: {
     color: "black",
     marginTop: 5,
+    textAlign: "center",
   },
-  slidersIcon: {
-    left: 340,
-    position: "absolute",
-  },
- //
-
 });

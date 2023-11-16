@@ -1,5 +1,6 @@
 import axios from "axios";
-let API_URL="http://192.168.1.31:8080/api";
+let API_URL="http://10.17.8.232:8080/api";
+
 function callApi(endpoint, method = "GET", body) {
 return axios({
 method,
@@ -19,12 +20,13 @@ export function GET_PAGE (endpoint, page= 0, size= 10, categoryId =null){
         url += `&categoryId=${categoryId}`;
     }
 
-    if (brandsId !== null) {
-        url += `&brandsId=${brandsId}`;
-    }
+    // if (brandsId !== null) {
+    //     url += `&brandsId=${brandsId}`;
+    // }
 
     return callApi(url, "GET");
 }
+
 export function GET_ID (endpoint, id) { return callApi(endpoint + "/" + id, "GET");
 }
 export function POST_ADD (endpoint, data) { return callApi(endpoint, "POST", data);

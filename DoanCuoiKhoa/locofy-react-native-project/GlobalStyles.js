@@ -11,6 +11,12 @@ export const FontFamily = {
   montserratMedium: "Montserrat-Medium",
   montserratBold: "Montserrat-Bold",
   montserratRegular: "Montserrat-Regular",
+
+  PoppinsMedium: "Poppins-Medium",
+  PoppinsBold: "Poppins-Bold",
+  PoppinsRegular: "Poppins-Italic",
+
+  DM_Sans: "DMSans_18pt-Bold",
 };
 /* font sizes */
 export const FontSize = {
@@ -26,7 +32,6 @@ export const FontSize = {
 };
 /* Colors */
 export const Color = {
-
   colorGray: "rgba(0, 0, 0, 0.4)",
 
   colorLightsalmon: "#ff937b",
